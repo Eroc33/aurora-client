@@ -1,0 +1,13 @@
+tcp_address = "192.168.1.100:100"
+aurora_address = 2
+poll_duration = { secs = 300, nanos = 0 }
+timeout_mul = 5
+
+[pv_output]
+system_id = "SYSTEM_ID"
+api_key = "API_KEY"
+
+[location]
+lattitude = 0.0
+longitude = 0.0
+elevation = 0.0
