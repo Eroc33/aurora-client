@@ -1,3 +1,4 @@
+[serial]
 tcp_address = "192.168.1.100:100"
 aurora_address = 2
 poll_duration = { secs = 300, nanos = 0 }

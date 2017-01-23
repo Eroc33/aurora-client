@@ -16,6 +16,7 @@ serde = "0.8.22"
 serde_derive = "0.8.22"
 mime = "0.2.2"
 sun-times = "0.1.0"
+error-chain = "0.8.0"
 
 [dependencies.aurora-rs]
 git = "https://github.com/Eroc33/aurora"

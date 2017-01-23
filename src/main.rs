@@ -14,6 +14,8 @@ extern crate hyper;
 extern crate mime;
 extern crate chrono;
 extern crate sun_times;
+#[macro_use]
+extern crate error_chain;
 
 use aurora_rs as aurora;
 
@@ -27,7 +29,7 @@ use tokio_service::Service;
 use tokio_proto::TcpClient;
 use tokio_timer::{Timer,TimerError};
 
-use chrono::{Local};
+use chrono::{Local,UTC,TimeZone};
 
 use hyper::Method;
 use hyper::status::StatusCode;
@@ -56,7 +58,7 @@ struct LocationConfig{
 }
 
 #[derive(Debug,Clone,Deserialize)]
-struct Config{
+struct SerialConfig{
     ///The address on which the client will connect to the tcp->serial bridge
     tcp_address: SocketAddr,
     ///The aurora protocol address
@@ -65,7 +67,12 @@ struct Config{
     poll_duration: Duration,
     ///The number of times to wait `poll_duration` before failing
     timeout_mul: u32,
+}
+
+#[derive(Debug,Clone,Deserialize)]
+struct Config{
     ///PVOutput.org config
+    serial: SerialConfig,
     pv_output: PvOutputConfig,
     location: LocationConfig,
 }
@@ -129,18 +136,18 @@ fn upload_request<C: hyper::client::Connect>(client: hyper::Client<C>, request: 
 
 }
 
-fn mainloop(core: &mut Core, handle: &Handle, cfg: &Config) -> Result<(),errors::Error>
+fn mainloop(core: &mut Core, handle: &Handle, serial_cfg: &SerialConfig, pvoutput_cfg: &PvOutputConfig) -> Result<(),errors::Error>
 {
-    let poll_duration = cfg.poll_duration;
-    let timeout_duration = poll_duration*cfg.timeout_mul;
+    let poll_duration = serial_cfg.poll_duration;
+    let timeout_duration = poll_duration*serial_cfg.timeout_mul;
     let timer = timer();
 
     let client = TcpClient::new(AuroraProto)
-        .connect(&cfg.tcp_address,&core.handle())
+        .connect(&serial_cfg.tcp_address,&core.handle())
         .map_err(errors::Error::from)
         .and_then(|client|{
             println!("Connected");
-            let ev_stream = energy_voltage_stream(client,cfg.aurora_address);
+            let ev_stream = energy_voltage_stream(client,serial_cfg.aurora_address);
             let ev_stream = ev_stream.rate_limited(poll_duration,timer.clone(),2);
 
             timer.timeout_stream(ev_stream,timeout_duration)
@@ -154,8 +161,8 @@ fn mainloop(core: &mut Core, handle: &Handle, cfg: &Config) -> Result<(),errors:
                         use hyper::header::*;
 
                         let headers = req.headers_mut();
-                        headers.set_raw("X-Pvoutput-Apikey",cfg.pv_output.api_key.clone());
-                        headers.set_raw("X-Pvoutput-SystemId",cfg.pv_output.system_id.clone());
+                        headers.set_raw("X-Pvoutput-Apikey",pvoutput_cfg.api_key.clone());
+                        headers.set_raw("X-Pvoutput-SystemId",pvoutput_cfg.system_id.clone());
                         headers.set(ContentType(Mime(TopLevel::Application,SubLevel::WwwFormUrlEncoded,vec![])));
                     }
                     let now = Local::now();
@@ -175,14 +182,14 @@ fn mainloop(core: &mut Core, handle: &Handle, cfg: &Config) -> Result<(),errors:
 
 fn main(){
     let cfg = load_config().expect("Couldn't load config");
-    let location = cf.location_cfg;
+    let Config{serial,location,pv_output} = cfg;
     let mut core = Core::new().unwrap();
     let handle = core.handle();
 
     loop{
         //temporarily hardcoded
         let (sunrise,sunset) = sun_times::sun_times(UTC::today(),location.latitude,location.longitude,location.elevation);
-        let (sunrise,sunset) = (Local::from_utc_datetime(sunrise.naive_utc()),Local::from_utc_datetime(sunset.naive_utc()));
+        let (sunrise,sunset) = (Local.from_utc_datetime(&sunrise.naive_utc()).time(),Local.from_utc_datetime(&sunset.naive_utc()).time());
         let day_start = chrono::NaiveTime::from_hms(0,0,0);
         let day_end = chrono::NaiveTime::from_hms(23,59,59);
 
@@ -193,7 +200,7 @@ fn main(){
 
         if daytime {
             //sunlight hours
-            let result = mainloop(&mut core, &handle, &cfg);
+            let result = mainloop(&mut core, &handle, &serial, &pv_output);
             match result {
                 //This probably means the tcp-serial bridge timed out so just continue
                 Err(errors::Error(errors::ErrorKind::Io(ref ioe),_)) if ioe.kind() == std::io::ErrorKind::BrokenPipe  => (),
