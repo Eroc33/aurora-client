@@ -15,3 +15,6 @@ path = "../lib"
 
 [dependencies]
 jni = "0.5.0"
+
+[build-dependencies]
+kohi = {git="https://github.com/Eroc33/kohi.git"}

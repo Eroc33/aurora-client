@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
  "aurora-client 0.1.0",
  "jni 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kohi 0.1.0 (git+https://github.com/Eroc33/kohi.git)",
 ]
 
 [[package]]
@@ -238,6 +239,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi-build 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "kohi"
+version = "0.1.0"
+source = "git+https://github.com/Eroc33/kohi.git#547890828c81634ac8d9c37f683490cca8faf10f"
+dependencies = [
+ "error-chain 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -598,6 +607,7 @@ dependencies = [
 "checksum jni 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d75e4bc41d4328cbd23c18ae8fce5b3f13b907509d49e19eb72dd5808db5c90a"
 "checksum jni-sys 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "de0aaaba8809ab8d83a53fe2b313b996b79e8632b855eae9f70ad4323dca91b8"
 "checksum kernel32-sys 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7507624b29483431c0ba2d82aece8ca6cdba9382bff4ddd0f7490560c056098d"
+"checksum kohi 0.1.0 (git+https://github.com/Eroc33/kohi.git)" = "<none>"
 "checksum language-tags 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a91d884b6667cd606bb5a69aa0c99ba811a115fc68915e7056ec08a46e93199a"
 "checksum lazycell 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ce12306c4739d86ee97c23139f3a34ddf0387bbf181bc7929d287025a8c3ef6b"
 "checksum libc 0.2.26 (registry+https://github.com/rust-lang/crates.io-index)" = "30885bcb161cf67054244d10d4a7f4835ffd58773bc72e07d35fecf472295503"
