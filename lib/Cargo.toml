@@ -15,7 +15,7 @@ tokio-timer = "0.1.0"
 serde = "1.0.7"
 serde_derive = "1.0.7"
 mime = "0.3.2"
-sun-times = {path = "../../sun-times"}
+sun-times = "0.1.2"
 error-chain = "0.10.0"
 hyper = "0.11.1"
 
