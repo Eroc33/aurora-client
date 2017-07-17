@@ -1,43 +1,4 @@
-[package]
-name = "aurora-client"
-version = "0.1.0"
-authors = ["Euan Rochester <euan@rochester.me.uk>"]
-license = "MIT/Apache-2.0"
-keywords = ["aurora","pv","solar","inverter"]
-repository = "https://github.com/Eroc33/aurora-client"
+[workspace]
 
-[dependencies]
-futures = "0.1.0"
-tokio-core = "0.1.3"
-tokio-proto = "0.1.0"
-tokio-service = "0.1.0"
-tokio-timer = "0.1.0"
-serde = "0.8.22"
-serde_derive = "0.8.22"
-mime = "0.2.2"
-sun-times = "0.1.0"
-error-chain = "0.8.0"
-
-[dependencies.aurora-rs]
-git = "https://github.com/Eroc33/aurora"
-
-[dependencies.toml]
-version = "0.2.1"
-default-features = false
-features = ["serde"]
-
-[dependencies.hyper]
-git = "https://github.com/hyperium/hyper.git"
-
-[dependencies.chrono]
-version = "0.2.25"
-features = ["serde"]
-
-
-[profile.release]
-panic = "abort"
-[profile.dev]
-panic = "abort"
-
-[replace]
-"tokio-proto:0.1.0" = { git = "https://github.com/tokio-rs/tokio-proto" }
+# Optional key, inferred if not present
+members = ["lib", "bin", "jni-lib"]

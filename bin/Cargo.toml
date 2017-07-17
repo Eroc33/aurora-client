@@ -1,0 +1,10 @@
+[package]
+name = "aurora-client-binary"
+version = "0.1.0"
+authors = ["Euan Rochester <euan@rochester.me.uk>"]
+license = "MIT/Apache-2.0"
+keywords = ["aurora","pv","solar","inverter"]
+repository = "https://github.com/Eroc33/aurora-client"
+
+[dependencies.aurora-client]
+path = "../lib"
